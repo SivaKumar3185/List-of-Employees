@@ -1,38 +1,40 @@
-var Path = require('path');
-var HtmlWebpackPlugin = require('html-webpack-plugin');
-var Webpack = require('webpack');
-var ExtractTextPlugin = require('extract-text-webpack-plugin');
-var CopyWebpackPlugin = require('copy-webpack-plugin');
+const Path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const Webpack = require('webpack');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
-var isProduction = process.env.NODE_ENV === 'production';
-var cssOutputPath = isProduction ? '/styles/app.[hash].css' : '/styles/app.css';
-var jsOutputPath = isProduction ? '/scripts/app.[hash].js' : '/scripts/app.js';
-var ExtractSASS = new ExtractTextPlugin(cssOutputPath);
-var port = isProduction ? process.env.PORT || 17000 : process.env.PORT || 3000;
+const isProduction = process.env.NODE_ENV === 'production';
+const cssOutputPath = isProduction ? '/styles/app.[hash].css' : '/styles/app.css';
+const jsOutputPath = isProduction ? '/scripts/app.[hash].js' : '/scripts/app.js';
+const ExtractSASS = new ExtractTextPlugin(cssOutputPath);
+const port = isProduction ? process.env.PORT || 17000 : process.env.PORT || 3000;
 
 // ------------------------------------------
 // Base
 // ------------------------------------------
-var webpackConfig = {
+const webpackConfig = {
   resolve: {
     root: Path.resolve(__dirname),
     alias: {
       app: 'src',
       actions: 'src/actions',
-      selectors: 'src/selectors',      
+      selectors: 'src/selectors',
     },
     extensions: ['', '.js'],
   },
   plugins: [
     new Webpack.DefinePlugin({
       'process.env': {
-        NODE_ENV: JSON.stringify(process.env.NODE_ENV != null ? process.env.NODE_ENV : 'development'),
+        NODE_ENV: JSON.stringify(
+          process.env.NODE_ENV != null ? process.env.NODE_ENV : 'development'
+        ),
       },
     }),
     new HtmlWebpackPlugin({
       template: Path.join(__dirname, './public/index.html'),
     }),
-    new CopyWebpackPlugin([ { from: 'static/assets', to: './' } ])
+    new CopyWebpackPlugin([{ from: 'static/assets', to: './' }]),
   ],
   module: {
     loaders: [{
@@ -56,7 +58,7 @@ webpackConfig.entry = !isProduction
 // ------------------------------------------
 webpackConfig.output = {
   path: Path.join(__dirname, './dist'),
-  filename: jsOutputPath,     
+  filename: jsOutputPath,
 };
 
 // ------------------------------------------
@@ -70,47 +72,47 @@ webpackConfig.devtool = isProduction ? 'source-map' : 'cheap-eval-source-map';
 // ------------------------------------------
 isProduction
   ? webpackConfig.module.loaders.push({
-      test: /\.(css|scss)$/,
-      loader: ExtractSASS.extract(['css', 'sass']),
-    })
+    test: /\.(css|scss)$/,
+    loader: ExtractSASS.extract(['css', 'sass']),
+  })
   : webpackConfig.module.loaders.push({
-      test: /\.(css|scss)$/,
-      loaders: ['style', 'css', 'sass'],
-    }
+    test: /\.(css|scss)$/,
+    loaders: ['style', 'css', 'sass'],
+  }
     );
 webpackConfig.module.loaders.push(
   {
-      test: /\.woff(\?v=\d+\.\d+\.\d+)?$/,
-      loader: "url?limit=10000&mimetype=application/font-woff&name=/[hash].[ext]"
-    }, 
-    {
-      test: /\.woff2(\?v=\d+\.\d+\.\d+)?$/,
-      loader: "url?limit=10000&mimetype=application/font-woff&name=/[hash].[ext]"
-    }, 
-    {
-      test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
-      loader: "url?limit=10000&mimetype=application/octet-stream&name=/[hash].[ext]"
-    }, 
-    {
-      test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
-      loader: "file?name=/[hash].[ext]"
-    }, 
-    {
-      test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
-      loader: "url?limit=10000&mimetype=image/svg+xml"
-    }
+    test: /\.woff(\?v=\d+\.\d+\.\d+)?$/,
+    loader: 'url?limit=10000&mimetype=application/font-woff&name=/[hash].[ext]',
+  },
+  {
+    test: /\.woff2(\?v=\d+\.\d+\.\d+)?$/,
+    loader: 'url?limit=10000&mimetype=application/font-woff&name=/[hash].[ext]',
+  },
+  {
+    test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
+    loader: 'url?limit=10000&mimetype=application/octet-stream&name=/[hash].[ext]',
+  },
+  {
+    test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
+    loader: 'file?name=/[hash].[ext]',
+  },
+  {
+    test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
+    loader: 'url?limit=10000&mimetype=image/svg+xml',
+  }
      );
 // Images
 // ------------------------------------
-webpackConfig.module.loaders.push(  
+webpackConfig.module.loaders.push(
   {
-      test: /\.(?:png|jpg|svg)$/,
-      loader: 'url?name=/[name].[ext]',
-      query: {        
-        limit: 20000
-      }
-    }
-)
+    test: /\.(?:png|jpg|svg)$/,
+    loader: 'url?name=/[name].[ext]',
+    query: {
+      limit: 20000,
+    },
+  }
+);
 
 // ------------------------------------------
 // Plugins
@@ -136,7 +138,7 @@ if (!isProduction) {
   webpackConfig.devServer = {
     contentBase: Path.join(__dirname, './'),
     hot: true,
-    port: port,
+    port,
     inline: true,
     progress: true,
     historyApiFallback: true,
